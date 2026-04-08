@@ -1,16 +1,21 @@
 # UDP_Echo_Server_VCU118
 Simple communication example of verilog-ethernet provided from "alexforencich"
 
-Assumptions
+# Assumptions
 - License
 - Windows
 - wsl
+
+# Tested Environments
+- VCU118
+- Vivado 2023.2.2
 
 # VCU118 `fpga_25g` Build Notes
 
 ## Build Environment
 This example was built in **WSL (Ubuntu)** instead of Windows Command Prompt.  
 The `fpga_25g` design depends on the full `verilog-ethernet` repository structure and a working Vivado command environment.
+Not 
 
 ## Build Procedure
 
@@ -89,6 +94,51 @@ cat /usr/local/bin/vivado
 ```bash
 make
 ```
+
+# How to run VCU118 `fpga_25g`
+
+### 1. Connect cables and turn on VCU118
+- Power cable to J15
+- Ethernet cable to J10
+- JTAG cable to J106
+- QSFP loopback module to J96 (it must be placed at QSFP1, not QSFP2). Hole which seems L should be top
+- SW12: 1000 (1001 can show you the status of QSFP1,2. If GPIO LEDs 0,1,2,3 are turn on, QSFP1 is working well.) 
+- SW16: 1010
+
+### 2. Upload bitstream file to VCU118
+Using Vivado, you can upload bitstream file.
+"PROGRAM AND DEBUG > Open Hardware Manager > Open Target > Auto connect"
+After the device is connected you can upload bitstream.
+"Program Device > "
+Now VCU1118 is ready for etherent communication
+
+### 3. Set IP same as VCU118
+To communicate with VCU118, we have to set the IP same as VCU118.
+
+Check IP using cmd,
+```bash
+ipconfig
+```
+If you are using 192.168.1.x, you are all set.
+
+Otherwise,
+Press Win button, and go to "Ethernet Setting".
+Find "IP assignment" and press "Edit".
+Change Automatic to Manual and turn on IPv4.
+IP address 192.168.1.10
+Subnet mask 255.255.255.0
+Save
+
+### 4. Send data through Ethernet
+Using WSL,
+```bash
+echo {data} | nc -u 192.168.1.128 1234
+```
+
+### 5. Results
+You can see same data on the terminal.
+SW12.1 == 0, You can check a first byte of data via GPIO LEDs.
+When you send "A", the ASCII Code b'0100_0001 will be displayed.
 
 ## Notes
 - The main issues were related to environment setup and path resolution, not the HDL design itself.
